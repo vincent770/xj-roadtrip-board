@@ -306,6 +306,7 @@ const colors = ["#087365", "#e24d3f", "#257f9a", "#8a6f00", "#4e8f43", "#b85b28"
 const routeCache = new Map();
 let activeDayId = "d2";
 let activeRenderId = 0;
+let activePhotoIndex = 0;
 
 const tabsEl = document.querySelector("#day-tabs");
 const overviewEl = document.querySelector("#overview-grid");
@@ -411,9 +412,20 @@ function setMapPhoto(item) {
   document.querySelector("#photo-desc").textContent = item.desc;
 }
 
+function setActivePhoto(index, options = {}) {
+  const day = options.day || currentDay();
+  const galleryItems = galleryForDay(day);
+  const nextIndex = Math.max(0, Math.min(index, galleryItems.length - 1));
+  activePhotoIndex = nextIndex;
+  setMapPhoto(galleryItems[nextIndex]);
+  routeGalleryEl.querySelectorAll("button").forEach((node) => {
+    node.classList.toggle("is-active", Number(node.dataset.photoIndex) === nextIndex);
+  });
+}
+
 function renderRouteGallery(day) {
   const galleryItems = galleryForDay(day);
-  setMapPhoto(galleryItems[0]);
+  activePhotoIndex = 0;
   routeGalleryEl.innerHTML = galleryItems
     .map(
       (item, index) => `
@@ -423,6 +435,12 @@ function renderRouteGallery(day) {
       `,
     )
     .join("");
+  setActivePhoto(0, { day });
+}
+
+function photoIndexForMapItem(day, index) {
+  const galleryLastIndex = galleryForDay(day).length - 1;
+  return Math.max(0, Math.min(index, galleryLastIndex));
 }
 
 function renderDayContent(day) {
@@ -472,14 +490,45 @@ async function getRoadGeometry(day) {
 }
 
 function addRoadLabels(day, color) {
-  day.labels.forEach((label) => {
-    L.marker([label.lat, label.lng], {
-      interactive: false,
+  day.labels.forEach((label, index) => {
+    const photoIndex = photoIndexForMapItem(day, index);
+    const marker = L.marker([label.lat, label.lng], {
+      interactive: true,
       icon: L.divIcon({
         className: "road-label",
-        html: `<span style="--label-color:${color}">${label.text}</span>`,
+        html: `<button type="button" style="--label-color:${color}">${label.text}</button>`,
       }),
     }).addTo(layerGroup);
+    marker.on("click", () => setActivePhoto(photoIndex, { day }));
+  });
+}
+
+function splitGeometryByStops(geometry, stopCount) {
+  if (stopCount < 2 || geometry.length < 2) return [geometry];
+  const segmentCount = stopCount - 1;
+  const segments = [];
+  for (let index = 0; index < segmentCount; index += 1) {
+    const start = Math.floor((index * (geometry.length - 1)) / segmentCount);
+    const end = Math.max(start + 1, Math.ceil(((index + 1) * (geometry.length - 1)) / segmentCount));
+    segments.push(geometry.slice(start, end + 1));
+  }
+  return segments;
+}
+
+function addInteractiveRouteSegments(day, geometry, color) {
+  splitGeometryByStops(geometry, day.route.length).forEach((segment, index) => {
+    if (segment.length < 2) return;
+    const photoIndex = photoIndexForMapItem(day, index);
+    const line = L.polyline(segment, {
+      color,
+      weight: 18,
+      opacity: 0,
+      interactive: true,
+      className: "route-hit-area",
+    }).addTo(layerGroup);
+    line.on("mouseover", () => line.setStyle({ opacity: 0.12 }));
+    line.on("mouseout", () => line.setStyle({ opacity: 0 }));
+    line.on("click", () => setActivePhoto(photoIndex, { day }));
   });
 }
 
@@ -503,10 +552,12 @@ async function renderMap(day) {
       距离：${day.distance}｜驾驶：${day.driveTime}<br>
       主要道路：${day.roadNames.join(" / ")}
     `);
+    addInteractiveRouteSegments(day, geometry, color);
     geometry.forEach((coord) => bounds.push(coord));
   }
 
   day.route.forEach((point, index) => {
+    const photoIndex = photoIndexForMapItem(day, index);
     const marker = L.circleMarker([point.lat, point.lng], {
       radius: index === 0 || index === day.route.length - 1 ? 8 : 6,
       color: "#fff",
@@ -515,6 +566,7 @@ async function renderMap(day) {
       fillOpacity: 1,
     }).addTo(layerGroup);
     marker.bindPopup(`<strong>${point.name}</strong><br>${day.day} · ${day.title}`);
+    marker.on("click", () => setActivePhoto(photoIndex, { day }));
   });
 
   addRoadLabels(day, color);
@@ -615,9 +667,7 @@ routeGalleryEl.addEventListener("click", (event) => {
   const index = Number(button.dataset.photoIndex);
   const item = galleryItems[index];
   if (!item) return;
-  setMapPhoto(item);
-  routeGalleryEl.querySelectorAll("button").forEach((node) => node.classList.remove("is-active"));
-  button.classList.add("is-active");
+  setActivePhoto(index);
 });
 
 document.querySelector("#day-status").addEventListener("change", (event) => {
