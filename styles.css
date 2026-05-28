@@ -312,9 +312,9 @@ section {
 
 .board-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
-  align-items: start;
+  align-items: center;
   padding: 11px 14px;
   background:
     linear-gradient(135deg, rgba(8, 115, 101, 0.12), rgba(226, 77, 63, 0.08)),
@@ -345,38 +345,6 @@ section {
   margin: 5px 0 0;
   color: var(--muted);
   font-size: 13px;
-}
-
-.board-meta {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(84px, 1fr));
-  gap: 6px;
-  min-width: 220px;
-}
-
-.board-meta span {
-  border: 1px solid rgba(8, 115, 101, 0.18);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.78);
-  padding: 7px 9px;
-}
-
-.board-meta small,
-.board-meta strong {
-  display: block;
-}
-
-.board-meta small {
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.board-meta strong {
-  margin-top: 2px;
-  color: var(--brand-dark);
-  font-size: 18px;
-  line-height: 1.05;
 }
 
 .board-actions {
@@ -780,11 +748,6 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  .board-meta {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    min-width: 0;
-  }
-
   .board-actions {
     flex-direction: row;
     justify-content: flex-start;
@@ -826,7 +789,6 @@ footer {
 
   .hero__metrics,
   .metric-row,
-  .board-meta,
   .management-strip,
   .safety-grid,
   .overview-grid,
