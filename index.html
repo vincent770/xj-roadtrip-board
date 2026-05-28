@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://unpkg.com" />
     <link rel="preconnect" href="https://commons.wikimedia.org" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="./styles.css?v=11" />
+    <link rel="stylesheet" href="./styles.css?v=12" />
   </head>
   <body>
     <header class="hero" id="top">
@@ -55,10 +55,16 @@
 
           <section class="driver-board" aria-live="polite">
             <div class="board-hero">
-              <div>
+              <div class="board-title-group">
                 <p class="board-day" id="board-day"></p>
                 <h2 id="board-title"></h2>
                 <p id="board-subtitle"></p>
+              </div>
+              <div class="board-meta" aria-label="当天核心指标">
+                <span><small>距离</small><strong id="metric-distance"></strong></span>
+                <span><small>驾驶</small><strong id="metric-drive"></strong></span>
+                <span><small>出发</small><strong id="metric-depart"></strong></span>
+                <span><small>风险</small><strong id="metric-risk"></strong></span>
               </div>
               <div class="board-actions">
                 <button class="ghost-button" id="copy-summary" type="button">复制今日简报</button>
@@ -66,58 +72,41 @@
               </div>
             </div>
 
-            <div class="metric-row" aria-label="当天核心指标">
-              <article class="metric-card metric-card--primary">
-                <small>预计距离</small>
-                <strong id="metric-distance"></strong>
-              </article>
-              <article class="metric-card metric-card--primary">
-                <small>驾驶时间</small>
-                <strong id="metric-drive"></strong>
-              </article>
-              <article class="metric-card">
-                <small>建议出发</small>
-                <strong id="metric-depart"></strong>
-              </article>
-              <article class="metric-card">
-                <small>风险等级</small>
-                <strong id="metric-risk"></strong>
-              </article>
-            </div>
-
             <div class="board-layout">
-              <div class="map-panel">
-                <div id="route-map" aria-label="每日驾驶路线地图"></div>
-              </div>
-              <article class="photo-panel">
-                <img id="day-photo" alt="" />
-                <div>
-                  <span id="photo-tag"></span>
-                  <h3 id="photo-title"></h3>
-                  <p id="photo-desc"></p>
-                  <small id="photo-credit"></small>
+              <div class="map-column">
+                <div class="map-panel">
+                  <div id="route-map" aria-label="每日驾驶路线地图"></div>
+                  <article class="map-photo-card">
+                    <img id="day-photo" alt="" />
+                    <div>
+                      <span id="photo-tag"></span>
+                      <h3 id="photo-title"></h3>
+                      <p id="photo-desc"></p>
+                    </div>
+                  </article>
                 </div>
-              </article>
-            </div>
-
-            <div class="detail-grid">
-              <article class="info-panel">
-                <h3>路线与主要道路</h3>
-                <div class="road-tags" id="road-tags"></div>
-                <ol class="route-steps" id="route-steps"></ol>
-              </article>
-              <article class="info-panel">
-                <h3>路况信息</h3>
-                <ul id="road-conditions"></ul>
-              </article>
-              <article class="info-panel">
-                <h3>驾驶注意事项</h3>
-                <ul id="day-notes"></ul>
-              </article>
-              <article class="info-panel">
-                <h3>风景与团建建议</h3>
-                <ul id="scenery-list"></ul>
-              </article>
+                <div class="route-gallery" id="route-gallery" aria-label="路段风景切换"></div>
+              </div>
+              <aside class="detail-rail" aria-label="当天行程信息">
+                <article class="info-panel info-panel--route">
+                  <h3>路线与主要道路</h3>
+                  <div class="road-tags" id="road-tags"></div>
+                  <ol class="route-steps" id="route-steps"></ol>
+                </article>
+                <article class="info-panel">
+                  <h3>路况信息</h3>
+                  <ul id="road-conditions"></ul>
+                </article>
+                <article class="info-panel">
+                  <h3>驾驶注意事项</h3>
+                  <ul id="day-notes"></ul>
+                </article>
+                <article class="info-panel">
+                  <h3>风景与团建建议</h3>
+                  <ul id="scenery-list"></ul>
+                  <small id="photo-credit"></small>
+                </article>
+              </aside>
             </div>
 
             <div class="management-strip">
@@ -214,6 +203,6 @@
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="./app.js?v=11"></script>
+    <script src="./app.js?v=12"></script>
   </body>
 </html>
