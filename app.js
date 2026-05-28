@@ -312,6 +312,7 @@ const overviewEl = document.querySelector("#overview-grid");
 const globalChecksEl = document.querySelector("#global-checks");
 const toastEl = document.querySelector("#toast");
 const dayPhoto = document.querySelector("#day-photo");
+const routeGalleryEl = document.querySelector("#route-gallery");
 
 const map = L.map("route-map", {
   scrollWheelZoom: false,
@@ -352,6 +353,78 @@ function listItems(items) {
   return items.map((item) => `<li>${item}</li>`).join("");
 }
 
+function galleryForDay(day) {
+  const gallery = {
+    d1: [
+      { label: "抵达", tag: "Arrival", title: "乌鲁木齐集合日", desc: day.photo.desc, url: day.photo.url },
+      { label: "取车", tag: "Prep", title: "取车与补给", desc: "把验车、补给、分车和第二天集合点一次性确认，避免正式自驾日返工。", url: "https://commons.wikimedia.org/wiki/Special:FilePath/Urumqi%20city%20view.jpg?width=900" },
+    ],
+    d2: [
+      { label: "S101", tag: "Road", title: "S101 国防公路", desc: "丹霞、峡谷和草原切换很快，适合第一天建立车队节奏。", url: day.photo.url },
+      { label: "安集海", tag: "Canyon", title: "安集海大峡谷", desc: "风大且边缘土质松散，拍照点要服从安全区域。", url: "https://commons.wikimedia.org/wiki/Special:FilePath/Anjihai%20Grand%20Canyon.jpg?width=900" },
+    ],
+    d3: [
+      { label: "独库", tag: "Mountain", title: "独库公路北段", desc: day.photo.desc, url: day.photo.url },
+      { label: "乔尔玛", tag: "Pass", title: "乔尔玛补给点", desc: "山路中段适合统一休息、检查司机状态和车辆状态。", url: "https://commons.wikimedia.org/wiki/Special:FilePath/G217_Duku.jpg?width=900" },
+      { label: "巴音", tag: "Grassland", title: "巴音布鲁克草原", desc: "抵达后以休息为主，是否看日落取决于当天体力和天气。", url: "https://commons.wikimedia.org/wiki/Special:FilePath/Bayanbulak%20Grassland.jpg?width=900" },
+    ],
+    d4: [
+      { label: "独库南", tag: "Road", title: "独库南段", desc: day.photo.desc, url: day.photo.url },
+      { label: "龙池", tag: "Lake", title: "大小龙池", desc: "适合短暂停靠，不建议压缩后半天峡谷时间。", url: "https://commons.wikimedia.org/wiki/Special:FilePath/Tianchi%20Lake%2C%20Xinjiang.jpg?width=900" },
+      { label: "峡谷", tag: "Canyon", title: "天山神秘大峡谷", desc: "红色峡谷景观强，但强降雨或山洪预警时要取消。", url: "https://commons.wikimedia.org/wiki/Special:FilePath/Kuche%20Grand%20Canyon.jpg?width=900" },
+    ],
+    d5: [
+      { label: "库车", tag: "Culture", title: "库车文化段", desc: day.photo.desc, url: day.photo.url },
+      { label: "克孜尔", tag: "Grottoes", title: "克孜尔千佛洞", desc: "适合作为低强度文化日重点，不要把参观安排得太赶。", url: "https://commons.wikimedia.org/wiki/Special:FilePath/Kizil_caves_2006_10_01.jpg?width=900" },
+    ],
+    d6: [
+      { label: "阿拉尔", tag: "Supply", title: "阿拉尔补给确认", desc: "进入沙漠公路前确认油、水、离线地图和司机状态。", url: day.photo.url },
+      { label: "G580", tag: "Desert", title: "G580 阿和沙漠公路", desc: day.photo.desc, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Tarim_Desert_Highway_-_Desert_Scene%2C_Xinjiang%2C_China.jpg?width=900" },
+      { label: "和田", tag: "Arrival", title: "和田/墨玉抵达", desc: "长距离日抵达后建议只安排清淡晚餐和早休息。", url: "https://commons.wikimedia.org/wiki/Special:FilePath/Hotan%20Xinjiang.jpg?width=900" },
+    ],
+    d7: [
+      { label: "和田", tag: "South Xinjiang", title: "南疆城镇带", desc: day.photo.desc, url: day.photo.url },
+      { label: "莎车", tag: "Town", title: "莎车短停", desc: "城镇段补给方便，但仍要控制总驾驶时长。", url: "https://commons.wikimedia.org/wiki/Special:FilePath/Yarkand%20Xinjiang.jpg?width=900" },
+      { label: "喀什", tag: "Kashgar", title: "喀什抵达", desc: "抵达后可安排轻松晚餐，把正式游览留给后续。", url: "https://commons.wikimedia.org/wiki/Special:FilePath/Id%20Kah%20Mosque%2C%20Kashgar.jpg?width=900" },
+    ],
+    d8: [
+      { label: "白沙湖", tag: "Plateau", title: "白沙湖", desc: day.photo.desc, url: day.photo.url },
+      { label: "喀湖", tag: "Karakul", title: "喀拉库勒湖", desc: "高海拔、风大、温差明显，停留时间应服从身体状态。", url: "https://commons.wikimedia.org/wiki/Special:FilePath/Karakul-muztagh-ata-d04.jpg?width=900" },
+    ],
+    d9: [
+      { label: "喀什", tag: "Return", title: "喀什返程日", desc: day.photo.desc, url: day.photo.url },
+      { label: "还车", tag: "Close", title: "还车与返航", desc: "留足还车、加油、开发票和机场安检时间。", url: "https://commons.wikimedia.org/wiki/Special:FilePath/Kashgar%20Old%20Town.jpg?width=900" },
+    ],
+  };
+
+  return gallery[day.id] || [{ label: day.theme, tag: day.photo.tag, title: day.photo.title, desc: day.photo.desc, url: day.photo.url }];
+}
+
+function setMapPhoto(item) {
+  dayPhoto.src = item.url;
+  dayPhoto.alt = item.title;
+  dayPhoto.onerror = () => {
+    if (dayPhoto.src !== fallbackPhoto) dayPhoto.src = fallbackPhoto;
+  };
+  document.querySelector("#photo-tag").textContent = item.tag;
+  document.querySelector("#photo-title").textContent = item.title;
+  document.querySelector("#photo-desc").textContent = item.desc;
+}
+
+function renderRouteGallery(day) {
+  const galleryItems = galleryForDay(day);
+  setMapPhoto(galleryItems[0]);
+  routeGalleryEl.innerHTML = galleryItems
+    .map(
+      (item, index) => `
+        <button class="${index === 0 ? "is-active" : ""}" type="button" data-photo-index="${index}">
+          ${item.label}
+        </button>
+      `,
+    )
+    .join("");
+}
+
 function renderDayContent(day) {
   document.querySelector("#board-day").textContent = `${day.day} · ${day.date} · ${day.transport}`;
   document.querySelector("#board-title").textContent = day.title;
@@ -361,15 +434,8 @@ function renderDayContent(day) {
   document.querySelector("#metric-depart").textContent = day.depart;
   document.querySelector("#metric-risk").textContent = day.risk;
 
-  dayPhoto.src = day.photo.url;
-  dayPhoto.alt = `${day.day} ${day.photo.title}`;
-  dayPhoto.onerror = () => {
-    if (dayPhoto.src !== fallbackPhoto) dayPhoto.src = fallbackPhoto;
-  };
-  document.querySelector("#photo-tag").textContent = day.photo.tag;
-  document.querySelector("#photo-title").textContent = day.photo.title;
-  document.querySelector("#photo-desc").textContent = day.photo.desc;
   document.querySelector("#photo-credit").textContent = day.photo.credit;
+  renderRouteGallery(day);
 
   document.querySelector("#road-tags").innerHTML = day.roadNames.map((road) => `<span>${road}</span>`).join("");
   document.querySelector("#route-steps").innerHTML = listItems(day.steps);
@@ -544,6 +610,18 @@ tabsEl.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-day]");
   if (!button) return;
   setActiveDay(button.dataset.day);
+});
+
+routeGalleryEl.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-photo-index]");
+  if (!button) return;
+  const galleryItems = galleryForDay(currentDay());
+  const index = Number(button.dataset.photoIndex);
+  const item = galleryItems[index];
+  if (!item) return;
+  setMapPhoto(item);
+  routeGalleryEl.querySelectorAll("button").forEach((node) => node.classList.remove("is-active"));
+  button.classList.add("is-active");
 });
 
 document.querySelector("#day-status").addEventListener("change", (event) => {
