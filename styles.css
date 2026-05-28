@@ -687,14 +687,15 @@ footer {
 }
 
 .road-label {
-  pointer-events: none;
+  pointer-events: auto;
 }
 
-.road-label span {
+.road-label button {
   display: inline-flex;
   align-items: center;
   width: max-content;
   max-width: 200px;
+  cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.92);
   border-left: 5px solid var(--label-color);
   border-radius: 999px;
@@ -706,6 +707,10 @@ footer {
   line-height: 1.2;
   padding: 6px 10px 6px 8px;
   white-space: nowrap;
+}
+
+.route-hit-area {
+  cursor: pointer;
 }
 
 .toast {
