@@ -429,10 +429,6 @@ function renderDayContent(day) {
   document.querySelector("#board-day").textContent = `${day.day} · ${day.date} · ${day.transport}`;
   document.querySelector("#board-title").textContent = day.title;
   document.querySelector("#board-subtitle").textContent = day.subtitle;
-  document.querySelector("#metric-distance").textContent = day.distance;
-  document.querySelector("#metric-drive").textContent = day.driveTime;
-  document.querySelector("#metric-depart").textContent = day.depart;
-  document.querySelector("#metric-risk").textContent = day.risk;
 
   document.querySelector("#photo-credit").textContent = day.photo.credit;
   renderRouteGallery(day);
